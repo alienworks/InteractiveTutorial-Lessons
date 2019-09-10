@@ -25,20 +25,20 @@ public class AlienFinder : Smartcontract
     public static void Main(string alienName) 
     {
         uint blockHeight = Blockchain.GetHeight();
-        uint xna = FinaXnaOnPlanet(GeneratePlanet(blockHeight));
+        uint xna = FindXna(RandomNumber(blockHeight));
         Alien someAlien = new Alien(xna, alienName, blockHeight);
         aliens.Add(someAlien);
         Runtime.Notify("Alien created, ID: " + ToString(aliens.count - 1));
     }
 
-    private static ulong GeneratePlanet(uint blockHeight)
+    private static ulong RandomNumber(uint blockHeight)
     {
         return Blockchain.GetHeader(blockHeight).ConsensusData; 
     }
 
-    private static uint FindXnaOnPlanet(ulong planet)
+    private static uint FindXna(ulong randomNumber)
     {
-        return (uint)(planet % 100000000);
+        return (uint)(randomNumber % 100000000);
     }
     
 }
