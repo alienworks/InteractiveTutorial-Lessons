@@ -5,7 +5,7 @@ using System.Numerics;
 
 public class AlienFinder : Smartcontract
 {
-    struct Alien
+    class Alien
     {
         private uint xna;
         private string alienName;
