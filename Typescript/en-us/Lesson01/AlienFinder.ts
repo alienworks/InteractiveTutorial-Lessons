@@ -10,7 +10,7 @@ export class AlienFinder extends SmartContract {
     // array to keep track of all Alien tuples; 
     private readonly aliens = ArrayStorage.for<[number, string, number]>();
 
-    public createAlien(alienName: string) {
+    public generateAlien(alienName: string) {
         let blockHeight: number = Blockchain.currentHeight;
         let xna: number = this.findXna(this.randomNumber(blockHeight));
         let someAlien: [number, string, number] = [xna, alienName, blockHeight];

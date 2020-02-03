@@ -8,7 +8,7 @@ describe('AlienFinder', () => {
   });
   test('invoke', async () => {
     await withContracts(async ({ alienFinder }) => {
-      const receipt = await alienFinder.createAlien.confirmed('someone');
+      const receipt = await alienFinder.generateAlien.confirmed('someone');
     });
   });
 });
