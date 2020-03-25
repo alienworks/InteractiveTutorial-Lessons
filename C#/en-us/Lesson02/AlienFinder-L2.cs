@@ -6,12 +6,12 @@ using Helper = Neo.SmartContract.Framework.Helper;
 
 public class AlienFinder : SmartContract
 {
-    // type name for the contract, 
+    // type name for the contract
     const string AlienMapName = nameof(AlienFinder); 
 
     public class Alien
     {
-        private static BigInteger counter=0; 
+        private static BigInteger counter = 0; 
         
         public uint Xna
         { get; set; }
@@ -43,11 +43,14 @@ public class AlienFinder : SmartContract
         {
             return false; 
         }
-        switch (operation) {
+        switch (operation) 
+        {
             case "generateAlien":
                 return GenerateAlien((string)args[0], (byte[])args[1]); 
             case "query":
-                return Query((byte[]) args[0]); 
+                return Query((byte[])args[0]); 
+            case "mutate":
+                return Mutate((byte[])args[0], (uint)args[1]); 
             default:
                 return false; 
         }
@@ -61,8 +64,7 @@ public class AlienFinder : SmartContract
         uint blockHeight = Blockchain.GetHeight();
         uint xna = FindXna(RandomNumber(blockHeight));
         Alien someAlien = new Alien(xna, alienName, blockHeight);
-
-        // aliens.Add(someAlien);
+        // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(AlienMapName); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
         Runtime.Notify("Alien created, ID: " + (someAlien.Id)); 
