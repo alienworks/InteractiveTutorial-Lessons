@@ -23,8 +23,6 @@ public class AlienFinder : Smartcontract
         }
     }
 
-    // list to keep track of all Alien structs; 
-
     public static void Main(string alienName) 
     {
         uint blockHeight = Blockchain.GetHeight();
