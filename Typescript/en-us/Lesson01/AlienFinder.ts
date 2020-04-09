@@ -7,7 +7,7 @@ interface Alien extends SerializableValueObject {
 }
 
 const notifyCreation = createEventNotifier<number>(
-    'Alien created, ID: ',
+    'generate',
     'id'
 );
 
