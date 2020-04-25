@@ -8,7 +8,7 @@ describe('AlienFinder', () => {
     });
   });
   test('invoke', async () => {
-    await withContracts(async ({ alienFinder }) => {
+    await withContracts(async ({ alienFinder, developerClient }) => {
       // Test owner check
       let error: Error | undefined;
       try {
@@ -35,9 +35,15 @@ describe('AlienFinder', () => {
 
       // Test query
       const someAlien = await alienFinder.query(new BigNumber(2));
-      console.log(someAlien.alienName);
       expect(someAlien.alienName).toEqual('someone');
       expect(someAlien.id.toNumber()).toEqual(2);
+
+      // Test mutate
+      developerClient.fastForwardOffset(60);
+      const mutateReceipt = await alienFinder.mutate.confirmed(new BigNumber(2), new BigNumber(0));
+      expect(mutateReceipt.result.state).toEqual('HALT');
+      const mutatedAlien = await alienFinder.query(new BigNumber(2));
+      expect(mutatedAlien.xna == someAlien.xna).toBeFalsy();
     });
   });
 });
