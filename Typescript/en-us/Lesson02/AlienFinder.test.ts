@@ -43,7 +43,7 @@ describe('AlienFinder', () => {
       const mutateReceipt = await alienFinder.mutate.confirmed(new BigNumber(2), new BigNumber(0));
       expect(mutateReceipt.result.state).toEqual('HALT');
       const mutatedAlien = await alienFinder.query(new BigNumber(2));
-      expect(mutatedAlien.xna == someAlien.xna).toBeFalsy();
+      expect(mutatedAlien.xna != someAlien.xna).toBeTruthy();
     });
   });
 });
