@@ -51,7 +51,7 @@ export class AlienFinder extends SmartContract {
 
     @constant
     private findXna(randomNumber: number): number {
-        return randomNumber % 100000000;
+        return randomNumber % 1E8;
     }
 
     @constant
@@ -68,27 +68,32 @@ export class AlienFinder extends SmartContract {
     public mutate(id: number, attribute: number) {
         let a: Alien = this.query(id);
         let blockHeight: number = Blockchain.currentHeight;
-        let randomDigit: number = this.randomNumber(blockHeight) % 10;
+        let randomDigit: number = this.randomNumber(blockHeight) % 100;
 
         switch(attribute) {
             case 0: {
-                a.xna += randomDigit*2; 
-                a.xna -= randomDigit*100; 
-                a.xna -= randomDigit*10000; 
+                let right: number = a.xna % 1E6;
+                a.xna = randomDigit * 1E6 + right;
                 this.aliens.set(id, a);
                 break;
             }
             case 1: {
-                a.xna += randomDigit*2*100; 
-                a.xna -= randomDigit; 
-                a.xna -= randomDigit*10000; 
+                let left: number = a.xna / 1E6;
+                let right: number = a.xna % 1E4;
+                a.xna = left * 1E6 + randomDigit * 1E4 + right;
                 this.aliens.set(id, a);
                 break;
             }
             case 2: {
-                a.xna += randomDigit*2*10000; 
-                a.xna -= randomDigit; 
-                a.xna -= randomDigit*100; 
+                let left: number = a.xna / 1E4;
+                let right: number = a.xna % 1E2;
+                a.xna = left * 1E4 + randomDigit * 1E2 + right;
+                this.aliens.set(id, a);
+                break;
+            }
+            case 3: {
+                let left: number = a.xna / 1E2;
+                a.xna = left * 1E2 + randomDigit;
                 this.aliens.set(id, a);
                 break;
             }

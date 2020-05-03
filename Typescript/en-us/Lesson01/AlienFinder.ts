@@ -35,6 +35,6 @@ export class AlienFinder extends SmartContract {
 
     @constant
     private findXna(randomNumber: number): number {
-        return randomNumber % 100000000;
+        return randomNumber % 1E8;
     }
 }
