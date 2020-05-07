@@ -32,7 +32,7 @@ public class AlienFinder : SmartContract
             if (value != null) { counter = value.ToBigInteger(); }
             else { counter = 0; }
 
-            Id = counter++; 
+            Id = ++counter; 
             Storage.Put(Storage.CurrentContext, "counter", counter); 
         }
     }
@@ -58,7 +58,7 @@ public class AlienFinder : SmartContract
 
     public static bool GenerateAlien(string alienName, byte[] owner) 
     {
-        // Check if the owner is the same as one who invoked contract
+        // Check if the `owner` argument is the same as one who invoked contract
         if (!Runtime.CheckWitness(owner)) return false; 
 
         uint blockHeight = Blockchain.GetHeight();
@@ -90,8 +90,11 @@ public class AlienFinder : SmartContract
         return Helper.Deserialize(result) as Alien; 
     }
 
-    // Increments the desired field by a random amount, 
-    // then subtract that amount from other fields
+    /*
+    * Increase the desired digits of an alien xna by a random number
+    * the other fields will decrease so that the sum of attributes remain constant. 
+    * The first two digits (which represent life form) does not count as attribute. 
+    */
     public static void Mutate(byte[] id, uint attribute)
     {
         Alien a = Query(id); 
@@ -103,19 +106,21 @@ public class AlienFinder : SmartContract
         uint blockHeight = Blockchain.GetHeight(); 
         uint randomDigit = (uint) (RandomNumber(blockHeight) % 10); 
         switch(attribute) {
-            case 0:
-                // add twice the rng to the desired field, then substract--
-                // --equal amount from other fields. 
+            case 3: // weight
+                /* 
+                * Add twice the rng to the desired field, then substract
+                * equal amount from other fields. 
+                */
                 a.Xna += randomDigit*2; 
                 a.Xna -= randomDigit*100; 
                 a.Xna -= randomDigit*10000; 
                 return; 
-            case 1: 
+            case 2: // speed
                 a.Xna += randomDigit*2*100; 
                 a.Xna -= randomDigit; 
                 a.Xna -= randomDigit*10000; 
                 return; 
-            case 2: 
+            case 1: // strength 
                 a.Xna += randomDigit*2*10000; 
                 a.Xna -= randomDigit; 
                 a.Xna -= randomDigit*100; 
