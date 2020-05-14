@@ -204,7 +204,7 @@ export class AlienFinder extends SmartContract {
     }
 
     private judge(alien: Alien, value: number) {
-        if (value + this.d100() < 200) {
+        if (value + this.d100() > 100) {
             this.reward(alien);
         }
         else {
