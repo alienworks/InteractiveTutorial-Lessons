@@ -276,7 +276,7 @@ export class AlienFinder extends SmartContract {
                 // weight event(digits 7-8), get across a weak bridge
                 let weight: number = alien.xna % 1E2;
                 notifyEvent('weight', id);
-                this.judge(alien, weight);
+                this.judge(alien, 100 - weight);
                 break;
             }
             case 3: {
