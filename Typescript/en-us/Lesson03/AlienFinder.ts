@@ -263,25 +263,25 @@ export class AlienFinder extends SmartContract {
                 // weight event(digits 7-8), get across a weak bridge
                 let weight: number = alien.xna % 1E2;
                 notifyEvent('weight', id);
-                this.judge(alien, weight);
+                this.judge(alien, 100 - weight);
                 break;
             }
             case 3: {
                 // fight with another alien
-                notifyEvent('fight', id);
+                notifyEvent('battle', id);
                 let enemy = this.query(this.dN(this.counter))
                 this.fight(alien, enemy);
                 break;
             }
             case 4: {
                 // find treasure
-                notifyEvent('treasure', id);
+                notifyEvent('reward', id);
                 this.reward(alien);
                 break;
             }
             case 5: {
                 // fall into a trap
-                notifyEvent('trap', id);
+                notifyEvent('punish', id);
                 this.punish(alien);
                 break;
             }

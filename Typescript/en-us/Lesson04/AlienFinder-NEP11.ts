@@ -217,7 +217,7 @@ export class AlienFinder extends SmartContract {
     }
 
     private judge(alien: Alien, value: number) {
-        if (value + this.d100() < 200) {
+        if (value + this.d100() > 100) {
             this.reward(alien);
         }
         else {
@@ -230,18 +230,18 @@ export class AlienFinder extends SmartContract {
         let speed: number = alien.xna % 1E4 / 1E2;
         let weight: number = alien.xna % 1E2;
 
-        let oStrength: number = enemy.xna % 1E6 / 1E4;
-        let oSpeed: number = enemy.xna % 1E4 / 1E2;
-        let oWeight: number = enemy.xna % 1E2;
+        let enemyStrength: number = enemy.xna % 1E6 / 1E4;
+        let enemySpeed: number = enemy.xna % 1E4 / 1E2;
+        let enemyWeight: number = enemy.xna % 1E2;
 
         let score: number = 0;
-        if (strength > oStrength) {
+        if (strength > enemyStrength) {
             score++;
         }
-        if (speed > oSpeed) {
+        if (speed > enemySpeed) {
             score++;
         }
-        if (weight > oWeight) {
+        if (weight > enemyWeight) {
             score++;
         }
         
@@ -281,20 +281,20 @@ export class AlienFinder extends SmartContract {
             }
             case 3: {
                 // fight with another alien
-                notifyEvent('fight', id);
+                notifyEvent('battle', id);
                 let enemy = this.query(this.dN(this.counter))
                 this.fight(alien, enemy);
                 break;
             }
             case 4: {
                 // find treasure
-                notifyEvent('treasure', id);
+                notifyEvent('reward', id);
                 this.reward(alien);
                 break;
             }
             case 5: {
                 // fall into a trap
-                notifyEvent('trap', id);
+                notifyEvent('punish', id);
                 this.punish(alien);
                 break;
             }
