@@ -20,6 +20,7 @@ def generateAlien(xna, alienName, blockHeight):
         Put(context, 'counter', 1)
     else:
         Put(context, 'counter', counter + 1)
+    counter += 1
 
     temp_alien = {
         'xna': xna,
@@ -28,9 +29,9 @@ def generateAlien(xna, alienName, blockHeight):
         'id': counter
     }
 
-    context = GetContext()
-    Put(context, counter, temp_alien)
-    counter += 1
+    Put(context, temp_alien['id'], Serialize(temp_alien))
+    Notify(concat("Alien created, ID: ", temp_alien['id']))
+
     return temp_alien
 
 
@@ -38,4 +39,3 @@ def Main(temp_alienName):
     temp_blockHeight = GetHeight()
     temp_xna = FindXna(RandomNumber(temp_blockHeight))
     someAlien = generateAlien(temp_xna, temp_alienName, temp_blockHeight)
-    Notify(concat("Alien created, ID: ", someAlien['id']))
