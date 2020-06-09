@@ -2,6 +2,20 @@
 
 ## C# Part
 
+*Chapters tagged with [B] are beginner chapters.*
+
+- Lesson 01: Introduction
+  - [*[B]*Ch01 - NEO Contracts](/C#/en-us/Lesson01/L01Ch01.md)
+  - [*[B]*Ch02 - Variable and Array](/C#/en-us/Lesson01/L01Ch02.md)
+  - [*[B]*Ch03 - Object](/C#/en-us/Lesson01/L01Ch03.md)
+  - [*[B]*Ch04 - Storage](/C#/en-us/Lesson01/L01Ch04.md)
+  - [*[B]*Ch05 - Method and Return Value](/C#/en-us/Lesson01/L01Ch05.md)
+  - [Addendum - Variable Limitations for NEO Contracts](/C#/en-us/Lesson01/L01Ch05Addendum.md)
+  - [*[B]*Ch06 - Block Height and Random Number](/C#/en-us/Lesson01/L01Ch06.md)
+  - [Ch07 - Event Notifier](/C#/en-us/Lesson01/L01Ch07.md)
+  - [Ch08 - Test](/C#/en-us/Lesson01/L01Ch08.md)
+  - [Ch09 - Summary](/C#/en-us/Lesson01/L01Ch09.md)
+
 ## TypeScript Part
 
 - Lesson 01: Introduction
