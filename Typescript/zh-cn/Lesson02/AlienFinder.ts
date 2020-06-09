@@ -1,7 +1,7 @@
 import {
     SmartContract,
     SerializableValueObject,
-    ArrayStorage,
+    MapStorage,
     constant,
     Blockchain,
     createEventNotifier,
@@ -23,7 +23,9 @@ const notifyCreation = createEventNotifier<number>(
 
 export class AlienFinder extends SmartContract {
 
-    private readonly aliens = ArrayStorage.for<Alien>();
+    private readonly aliens = MapStorage.for<number, Alien>();
+
+    private counter: number = 0; 
 
     public constructor(public readonly owner: Address = Deploy.senderAddress) {
         super();
@@ -36,8 +38,9 @@ export class AlienFinder extends SmartContract {
 
         let blockHeight: number = Blockchain.currentHeight;
         let xna: number = this.findXna(this.randomNumber(blockHeight));
-        let someAlien: Alien = {xna: xna, alienName: alienName, blockHeight: blockHeight, id: this.aliens.length + 1};
-        this.aliens.push(someAlien);
+        let id: number = ++this.counter;
+        let someAlien: Alien = {xna: xna, alienName: alienName, blockHeight: blockHeight, id: id};
+        this.aliens.set(id, someAlien);
         notifyCreation(someAlien.id);
     }
 
@@ -48,40 +51,55 @@ export class AlienFinder extends SmartContract {
 
     @constant
     private findXna(randomNumber: number): number {
-        return randomNumber % 100000000;
+        return randomNumber % 1E8;
     }
 
     @constant
     public query(id: number): Alien {
-        if (id > this.aliens.length || id < 1) {
-            throw new Error('Out of index');
+        const alien = this.aliens.get(id);
+        if (alien === undefined) {
+            throw new Error('Alien not found');
         }
-        return this.aliens[id - 1];
+        else {
+            return alien;
+        }
     }
 
     public mutate(id: number, attribute: number) {
         let a: Alien = this.query(id);
         let blockHeight: number = Blockchain.currentHeight;
-        let randomDigit: number = this.randomNumber(blockHeight) % 10;
+        let randomDigit: number = this.randomNumber(blockHeight) % 100;
 
         switch(attribute) {
-            case 0:
-                a.xna += randomDigit*2; 
-                a.xna -= randomDigit*100; 
-                a.xna -= randomDigit*10000; 
-                return;
-            case 1:
-                a.xna += randomDigit*2*100; 
-                a.xna -= randomDigit; 
-                a.xna -= randomDigit*10000; 
-                return;
-            case 2:
-                a.xna += randomDigit*2*10000; 
-                a.xna -= randomDigit; 
-                a.xna -= randomDigit*100; 
-                return;
-            default:
-                return;
+            case 0: {
+                let right: number = a.xna % 1E6;
+                a.xna = randomDigit * 1E6 + right;
+                this.aliens.set(id, a);
+                break;
+            }
+            case 1: {
+                let left: number = a.xna / 1E6;
+                let right: number = a.xna % 1E4;
+                a.xna = left * 1E6 + randomDigit * 1E4 + right;
+                this.aliens.set(id, a);
+                break;
+            }
+            case 2: {
+                let left: number = a.xna / 1E4;
+                let right: number = a.xna % 1E2;
+                a.xna = left * 1E4 + randomDigit * 1E2 + right;
+                this.aliens.set(id, a);
+                break;
+            }
+            case 3: {
+                let left: number = a.xna / 1E2;
+                a.xna = left * 1E2 + randomDigit;
+                this.aliens.set(id, a);
+                break;
+            }
+            default: {
+                break;
+            }
         }
     }
 }

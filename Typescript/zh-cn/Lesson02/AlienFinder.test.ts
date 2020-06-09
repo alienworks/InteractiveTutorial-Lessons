@@ -2,13 +2,13 @@ import BigNumber from 'bignumber.js';
 import { withContracts } from '../neo-one/test';
 
 describe('AlienFinder', () => {
-  test('exist', async () => {
+  test('definition', async () => {
     await withContracts(async ({ alienFinder }) => {
       expect(alienFinder).toBeDefined();
     });
   });
-  test('invoke', async () => {
-    await withContracts(async ({ alienFinder }) => {
+  test('function', async () => {
+    await withContracts(async ({ alienFinder, developerClient }) => {
       // Test owner check
       let error: Error | undefined;
       try {
@@ -28,16 +28,19 @@ describe('AlienFinder', () => {
       expect(receipt.events).toHaveLength(1);
       let event = receipt.events[0];
       expect(event.name).toEqual('generate');
-      if (event.name !== 'generate') {
-        throw new Error('For TS');
-      }
       expect(event.parameters.id.toNumber()).toEqual(2);
 
       // Test query
       const someAlien = await alienFinder.query(new BigNumber(2));
-      console.log(someAlien.alienName);
       expect(someAlien.alienName).toEqual('someone');
       expect(someAlien.id.toNumber()).toEqual(2);
+
+      // Test mutate
+      developerClient.fastForwardOffset(60);
+      const mutateReceipt = await alienFinder.mutate.confirmed(new BigNumber(2), new BigNumber(0));
+      expect(mutateReceipt.result.state).toEqual('HALT');
+      const mutatedAlien = await alienFinder.query(new BigNumber(2));
+      expect(mutatedAlien.xna != someAlien.xna).toBeTruthy();
     });
   });
 });
