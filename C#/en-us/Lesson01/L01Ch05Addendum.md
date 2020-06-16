@@ -15,11 +15,11 @@ Some other commonly used types are implemented through one of the above types, f
 - `string` is implemented in NEO VM as its UTF8 ByteArray, which means it does not support the string handlers native to .Net
 - `char` is implemented as integer
 
-See [this page]((https://docs.neo.org/docs/en-us/sc/write/limitation.html)) for a more complete list of supported types and limitations. 
+See [this page]((https://docs.neo.org/docs/en-us/sc/write/limitation.html)) for a detailed account on supported types and limitations. 
 
 ## Built-in Types
 
-The NEO library also has a few built-in types. 
+The NEO library also has a few built-in types to address the lack of a some C# types. 
 
 - [BigDecimal](https://docs.neo.org/developerguide/en/api/Neo.BigDecimal.html) is a custom struct that can be used to define a decimal number. It can be used in place of float point numbers. 
 

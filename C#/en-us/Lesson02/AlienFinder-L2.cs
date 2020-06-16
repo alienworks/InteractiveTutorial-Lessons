@@ -39,12 +39,11 @@ public class AlienFinder : SmartContract
         return false; 
     }
 
-    public static bool GenerateAlien(string alienName, byte[] owner) 
+    public static BigInteger GenerateAlien(string alienName, byte[] owner) 
     {
-        if (owner.Length != 20)
-            throw new InvalidOperationException("The parameter owner SHOULD be 20-byte addresses.");
-        // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return false; 
+        if (owner.Length != 20 && owner.Length != 33)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address or a 33-byte public key");        // Check if the owner is the same as one who invoked contract
+        if (!Runtime.CheckWitness(owner)) return 0; 
 
         uint xna = FindXna(RandomNumber());
         Alien someAlien = new Alien
@@ -58,8 +57,8 @@ public class AlienFinder : SmartContract
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
         AlienGenerated(someAlien.Id); 
-        // Runtime.Notify("Alien created, ID: " + (someAlien.Id)); 
-        return true; 
+        // Runtime.Notify(alienName, "created");
+        return someAlien.Id; 
     }
 
     private static ulong RandomNumber()
@@ -86,7 +85,7 @@ public class AlienFinder : SmartContract
     private static BigInteger updateCounter()
     {
         BigInteger counter = getCounter(); 
-        counter++; 
+        counter = counter + 1; 
         Storage.Put(Storage.CurrentContext, "alienCount", counter); 
         return counter; 
     }
@@ -102,8 +101,8 @@ public class AlienFinder : SmartContract
 
     public static bool Delete(byte[] owner, byte[] id)
     {
-        if (owner.Length != 20)
-            throw new InvalidOperationException("The parameter owner SHOULD be 20-byte addresses.");
+        if (owner.Length != 20 && owner.Length != 33)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address or a 33-byte public key");        // Check if the owner is the same as one who invoked contract
         // Check if the owner is the same as one who invoked contract
         if (!Runtime.CheckWitness(owner)) return false; 
 

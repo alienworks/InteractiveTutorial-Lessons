@@ -5,7 +5,7 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 using Helper = Neo.SmartContract.Framework.Helper;
 
-public class AlienFinder : SmartContract
+public class AlienFinder_Ch4 : SmartContract
 {
     public delegate void deleAlienEvent(BigInteger id); 
     public static event deleAlienEvent AlienGenerated; 
@@ -46,10 +46,10 @@ public class AlienFinder : SmartContract
         return false; 
     }
 
-    public static BigInteger GenerateAlien(string alienName, byte[] owner) 
+    public static bool GenerateAlien(string alienName, byte[] owner) 
     {
         // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return 0; 
+        if (!Runtime.CheckWitness(owner)) return false; 
 
         uint xna = FindXna(RandomNumber());
         Alien someAlien = new Alien
@@ -63,7 +63,7 @@ public class AlienFinder : SmartContract
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
         AlienGenerated(someAlien.Id); 
-        return someAlien.Id; 
+        return true; 
     }
 
     private static ulong RandomNumber()
@@ -90,7 +90,7 @@ public class AlienFinder : SmartContract
     private static BigInteger updateCounter()
     {
         BigInteger counter = getCounter(); 
-        counter = counter + 1; 
+        counter++; 
         Storage.Put(Storage.CurrentContext, "alienCount", counter); 
         return counter; 
     }
@@ -162,15 +162,15 @@ public class AlienFinder : SmartContract
         switch(attribute) 
         {
             case 0:
-                a.Xna = a.Xna + (value * 10000); 
+                a.Xna += value * 10000; 
                 Rewarded("strength", value); 
                 break; 
             case 1: 
-                a.Xna = a.Xna + (value * 100); 
+                a.Xna += value * 100; 
                 Rewarded("speed", value); 
                 break; 
             case 2: 
-                a.Xna = a.Xna + value; 
+                a.Xna += value; 
                 Rewarded("weight", value); 
                 break; 
             default: 
@@ -188,15 +188,15 @@ public class AlienFinder : SmartContract
         switch(attribute)
         {
             case 0:
-                a.Xna = a.Xna - (value * 10000); 
+                a.Xna -= value * 10000; 
                 Punished("strength", value); 
                 break; 
             case 1: 
-                a.Xna = a.Xna - (value * 100); 
+                a.Xna -= value * 100; 
                 Punished("speed", value); 
                 break; 
             case 2: 
-                a.Xna = a.Xna - value; 
+                a.Xna -= value; 
                 Punished("weight", value); 
                 break; 
             default: 
@@ -225,11 +225,11 @@ public class AlienFinder : SmartContract
 
         int score = 0; 
         if (strength > enemyStrength) 
-            score = score + 1; 
+            score++; 
         if (speed > enemySpeed)
-            score = score + 1; 
+            score++; 
         if (weight > enemyWeight)
-            score = score + 1; 
+            score++; 
 
         if (score > 1) {
             alien = Reward(alien); 
@@ -288,4 +288,16 @@ public class AlienFinder : SmartContract
         alienMap.Put(id, Helper.Serialize(alien)); 
         return true; 
     }
+
+    /*
+    * NEP 11 Implementation
+    */ 
+    public static BigInteger TotalSupply() => getCounter(); 
+
+    public static BigInteger BalanceOf() 
+    {
+
+    }
+
+
 }

@@ -7,23 +7,20 @@ public class AlienFinder : SmartContract
 {
     public class Alien
     {
-        public static uint counter = 0; 
         public uint xna;
         public string alienName;
-        public uint id; 
     }
 
     public static void Main(string alienName) 
     {
-        uint xna = FindXna(RandomNumber());
-        Alien.counter = Alien.counter + 1; 
+        ulong randomNumber = RandomNumber(); 
+        uint xna = FindXna(randomNumber);
         Alien someAlien = new Alien
         {
             xna = xna, 
             alienName = alienName, 
-            id = Alien.counter
         };
-        Runtime.Notify("Alien created, ID: " + someAlien.id);
+        Runtime.Notify(alienName, "created!");
     }
 
     private static ulong RandomNumber()

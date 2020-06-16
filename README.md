@@ -2,19 +2,28 @@
 
 ## C# Part
 
-*Chapters tagged with [B] are beginner chapters. Readers who have familiarity with C# or programming can skip these Chapters.*
+*Chapters tagged with [B] focus more on the concepts of the C# language. Readers who have familiarity with C# or programming can skip these Chapters.*
 
 - Lesson 01: Introduction
-  - [[B]Ch01 - NEO Contracts](/C%23/en-us/Lesson01/L01Ch01.md)
-  - [[B]Ch02 - Variables and Unsigned Integers](/C%23/en-us/Lesson01/L01Ch02.md)
-  - [[B]Ch03 - Classes, the Basics](/C%23/en-us/Lesson01/L01Ch03.md)
-  - [[B]Ch04 - Constructors](/C%23/en-us/Lesson01/L01Ch04.md)
-  - [[B]Ch05 - Arrays and Reference Types](/C%23/en-us/Lesson01/L01Ch05.md)
+  - [[B] Ch01 - NEO Contracts](/C%23/en-us/Lesson01/L01Ch01.md)
+  - [[B] Ch02 - Variables and Unsigned Integers](/C%23/en-us/Lesson01/L01Ch02.md)
+  - [[B] Ch03 - Classes, the Basics](/C%23/en-us/Lesson01/L01Ch03.md)
+  - [[B] Ch04 - Arrays and Reference Types](/C%23/en-us/Lesson01/L01Ch05.md)
   - [Addendum - Variable Limitations for NEO Contracts](/C%23/en-us/Lesson01/L01Ch05Addendum.md)
-  - [[B]Ch06 - Methods and Return Values](/C%23/en-us/Lesson01/L01Ch06.md)
-  - [Ch07 - Block Height and Random Number](/C%23/en-us/Lesson01/L01Ch07.md)
-  - [Ch08 - Wrapping Up](/C%23/en-us/Lesson01/L01Ch08.md)
+  - [[B] Ch05 - Methods and Return Values](/C%23/en-us/Lesson01/L01Ch06.md)
+  - [Ch06 - Block Height and Random Number](/C%23/en-us/Lesson01/L01Ch07.md)
+  - [Ch07 - Wrapping Up](/C%23/en-us/Lesson01/L01Ch08.md)
+  - [Ch08 - Deployment and Invocation](/C%23/en-us/Lesson01/L01Ch09a.md)
   - [Ch09 - Summary](/C%23/en-us/Lesson01/L01Ch09.md)
+
+- Lesson 02: Deeper Into NEO Contracts
+  - [[B] Ch01 - More On Classes](/C%23/en-us/Lesson02/L02Ch01.md)
+  - [Ch02 - Flow Control & Contract Structure](/C%23/en-us/Lesson02/L02Ch02.md)
+  - [Ch03 - Exceptions & Runtime Class](/C%23/en-us/Lesson02/L02Ch03.md)
+  - [Ch04 - Static variables & Storage of Key-Value Pairs](/C%23/en-us/Lesson02/L02Ch04.md)
+  - [Ch05 - Storage using StorageMap](/C%23/en-us/Lesson02/L02Ch06.md)
+  - [Ch06 - Exercise: Implementing Query and Delete](/C%23/en-us/Lesson02/L02Ch06.md)
+  - [Ch07 - Summary](/C%23/en-us/Lesson02/L02Ch07.md)
 
 ## TypeScript Part
 
