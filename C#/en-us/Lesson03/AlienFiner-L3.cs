@@ -5,18 +5,39 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 using Helper = Neo.SmartContract.Framework.Helper;
 
-public class AlienFinder : SmartContract
+public class AlienFinder_Ch3 : SmartContract
 {
-    public delegate void deleAlienEvent(BigInteger id); 
-    public static event deleAlienEvent AlienGenerated; 
-    public static event deleAlienEvent AlienDeleted; 
+    public delegate void AlienUpdateDelegate(BigInteger id); 
+    public static event AlienUpdateDelegate AlienGenerated; 
+    private static void OnAlienGenerated(BigInteger id) 
+    {
+        if (AlienGenerated != null) AlienGenerated(id); 
+    }
+    
+    public static event AlienUpdateDelegate AlienDeleted; 
+    private static void OnAlienDeleted(BigInteger id) 
+    {
+        if (AlienDeleted != null) AlienDeleted(id); 
+    }
 
     public static event Action<string, uint> Rewarded; 
+    private static void OnRewarded(String s, uint v) 
+    {
+        if (Rewarded != null) Rewarded(s, v); 
+    }
 
     public static event Action<string, uint> Punished; 
+    private static void OnPunished(String s, uint v) 
+    {
+        if (Punished != null) Punished(s, v); 
+    }
 
     public static event Action<string, byte[]> EncounterTriggered; 
-
+    private static void OnEncounterTriggered(String s, byte[] v) 
+    {
+        if (Punished != null) EncounterTriggered(s, v); 
+    }
+    
     public class Alien
     {        
         public uint Xna
@@ -46,10 +67,10 @@ public class AlienFinder : SmartContract
         return false; 
     }
 
-    public static BigInteger GenerateAlien(string alienName, byte[] owner) 
+    public static bool GenerateAlien(string alienName, byte[] owner) 
     {
         // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return 0; 
+        if (!Runtime.CheckWitness(owner)) return false; 
 
         uint xna = FindXna(RandomNumber());
         Alien someAlien = new Alien
@@ -62,8 +83,8 @@ public class AlienFinder : SmartContract
         // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
-        AlienGenerated(someAlien.Id); 
-        return someAlien.Id; 
+        OnAlienGenerated(someAlien.Id); 
+        return true; 
     }
 
     private static ulong RandomNumber()
@@ -90,7 +111,7 @@ public class AlienFinder : SmartContract
     private static BigInteger updateCounter()
     {
         BigInteger counter = getCounter(); 
-        counter = counter + 1; 
+        counter++; 
         Storage.Put(Storage.CurrentContext, "alienCount", counter); 
         return counter; 
     }
@@ -113,7 +134,7 @@ public class AlienFinder : SmartContract
 
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Delete(id); 
-        AlienDeleted(id.ToBigInteger()); 
+        OnAlienDeleted(id.ToBigInteger()); 
         return true; 
     }
 
@@ -162,16 +183,16 @@ public class AlienFinder : SmartContract
         switch(attribute) 
         {
             case 0:
-                a.Xna = a.Xna + (value * 10000); 
-                Rewarded("strength", value); 
+                a.Xna += value * 10000; 
+                OnRewarded("strength", value); 
                 break; 
             case 1: 
-                a.Xna = a.Xna + (value * 100); 
-                Rewarded("speed", value); 
+                a.Xna += value * 100; 
+                OnRewarded("speed", value); 
                 break; 
             case 2: 
-                a.Xna = a.Xna + value; 
-                Rewarded("weight", value); 
+                a.Xna += value; 
+                OnRewarded("weight", value); 
                 break; 
             default: 
                 break; 
@@ -188,16 +209,16 @@ public class AlienFinder : SmartContract
         switch(attribute)
         {
             case 0:
-                a.Xna = a.Xna - (value * 10000); 
-                Punished("strength", value); 
+                a.Xna -= value * 10000; 
+                OnPunished("strength", value); 
                 break; 
             case 1: 
-                a.Xna = a.Xna - (value * 100); 
-                Punished("speed", value); 
+                a.Xna -= value * 100; 
+                OnPunished("speed", value); 
                 break; 
             case 2: 
-                a.Xna = a.Xna - value; 
-                Punished("weight", value); 
+                a.Xna -= value; 
+                OnPunished("weight", value); 
                 break; 
             default: 
                 break; 
@@ -206,29 +227,24 @@ public class AlienFinder : SmartContract
     }
 
     // Determines the success of an action using a D100 and modifier
-    private static Alien Check(Alien a, int modifier) {
-        if (modifier + D100() > 100)
+    private static Alien Check(Alien a, int modifier) 
+    {
+        if (modifier + D100() > 99)
             return Reward(a); 
         else 
             return Punish(a); 
     }
 
     // Modify the alien depending on result, then return it. 
-    private static Alien Fight(Alien alien, Alien enemy){
-        int strength = getStrength(alien); 
-        int speed = getSpeed(alien); 
-        int weight = getWeight(alien); 
-
-        int enemyStrength = getStrength(enemy);
-        int enemySpeed = getSpeed(enemy);
-        int enemyWeight = getWeight(enemy);
-
+    private static Alien Fight(Alien alien, Alien enemy)
+    {
         int score = 0; 
-        if (strength > enemyStrength) 
+
+        if (getStrength(alien) > getStrength(enemy)) 
             score = score + 1; 
-        if (speed > enemySpeed)
+        if (getSpeed(alien) > getSpeed(enemy))
             score = score + 1; 
-        if (weight > enemyWeight)
+        if (getWeight(alien) > getWeight(enemy))
             score = score + 1; 
 
         if (score > 1) {
@@ -240,7 +256,8 @@ public class AlienFinder : SmartContract
         return alien; 
     }
 
-    public static bool Forward(byte[] id) {
+    public static bool Forward(byte[] id) 
+    {
         Alien alien = Query(id); 
         if (alien == null) 
         {
@@ -252,31 +269,31 @@ public class AlienFinder : SmartContract
         switch(encounter) 
         {
             case 0:  // Strength check, remove some obstacle in the way
-                EncounterTriggered("strength", id); 
+                OnEncounterTriggered("strength", id); 
                 alien = Check(alien, getStrength(alien)); 
                 break; 
             case 1:  // Speed check, run through dangerous area
-                EncounterTriggered("speed", id); 
+                OnEncounterTriggered("speed", id); 
                 alien = Check(alien, getSpeed(alien)); 
                 break; 
             case 2:  // Weight check, get across a weak bridge
-                EncounterTriggered("weight", id); 
-                int modifier = 100 - getWeight(alien); 
+                OnEncounterTriggered("weight", id); 
+                int modifier = 99 - getWeight(alien); 
                 alien = Check(alien, modifier); 
                 break; 
             case 3:  // Battle encounter
-                EncounterTriggered("battle", id); 
+                OnEncounterTriggered("battle", id); 
                 byte[] enemyId = DN(getCounter()).ToByteArray(); 
                 Alien enemy = Query(enemyId); 
-                if (enemy == null) return false; 
+                if (enemy == null) break; 
                 alien = Fight(alien, enemy); 
                 break; 
             case 4:  // Find treasure
-                EncounterTriggered("reward", id); 
+                OnEncounterTriggered("reward", id); 
                 alien = Reward(alien); 
                 break; 
             case 5: // Fall into trap
-                EncounterTriggered("punish", id); 
+                OnEncounterTriggered("punish", id); 
                 alien = Punish(alien); 
                 break; 
             default: 

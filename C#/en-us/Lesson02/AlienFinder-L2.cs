@@ -56,8 +56,7 @@ public class AlienFinder : SmartContract
         // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
-        AlienGenerated(someAlien.Id); 
-        // Runtime.Notify(alienName, "created");
+        Runtime.Notify(someAlien.Id, "created");
         return someAlien.Id; 
     }
 
