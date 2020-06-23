@@ -32,8 +32,6 @@ public class AlienFinder : SmartContract
                     return GenerateAlien((string)args[0], (byte[])args[1]); 
                 case "query":
                     return Query((byte[])args[0]); 
-                case "delete": 
-                    return Delete((byte[])args[0], (byte[])args[1]); 
             }
         }
         return false; 

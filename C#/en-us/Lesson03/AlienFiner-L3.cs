@@ -58,8 +58,6 @@ public class AlienFinder_Ch3 : SmartContract
                     return GenerateAlien((string)args[0], (byte[])args[1]); 
                 case "query":
                     return Query((byte[])args[0]); 
-                case "delete": 
-                    return Delete((byte[])args[0], (byte[])args[1]); 
                 case "forward": 
                     return Forward((byte[])args[0]); 
             }
@@ -123,19 +121,6 @@ public class AlienFinder_Ch3 : SmartContract
         var result = alienMap.Get(id); 
         if (result.Length == 0) return null; 
         return Helper.Deserialize(result) as Alien; 
-    }
-
-    public static bool Delete(byte[] owner, byte[] id)
-    {
-        if (owner.Length != 20)
-            throw new InvalidOperationException("The parameter owner SHOULD be 20-byte addresses.");
-        // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return false; 
-
-        StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
-        alienMap.Delete(id); 
-        OnAlienDeleted(id.ToBigInteger()); 
-        return true; 
     }
 
     public static uint D6() 
