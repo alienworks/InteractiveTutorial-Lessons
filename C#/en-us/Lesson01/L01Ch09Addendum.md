@@ -1,0 +1,58 @@
+# Deployment and Invocation
+
+After finishing the contract, it is time to test it out on the blockchain. Depending ont the development environment, the ways of deploying and invoking contracts will differ. So this chapter will focus on the concepts important to the process instead. 
+
+### Deployment
+
+Neo contracts are compiled into `.avm` files before being deployed onto the blockchain. The contract is sent to the blockchain in the form of a transaction. Information about each contract can be stored like this: 
+
+```json
+{
+  "name": "AlienFinder",
+  "hash": "0x39afb0f0a253706a4ef3ff3ae38d1c6abb4212b7",
+  "entry-point": "Main",
+  "contract-data": "54c56b6c766b00527ac46161e001004c006a51527ac46a51c361e001016e006a52527ac46152c5766a52c3007cc4766a00c3517cc46a53527ac452c576006a00c3c47651086372656174656421c46168040507921661616c756652c56b61616804a230d2106a00527ac46a00c3616804a1696268616804359b68de6a51527ac46203006a51c3616c756652c56b6c766b00527ac4616a00c30400e1f505976a51527ac46203006a51c3616c7566",
+  "properties": {
+    "has-dynamic-invoke": "False",
+    "has-storage": "False"
+  },
+  "functions": [
+    {
+      "name": "Main",
+      "return-type": "Void",
+      "parameters": [
+        {
+          "name": "parameter0",
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "events": []
+}
+```
+
+Some notable fields are: 
+- `hash`: or sometimes referred to as the 'script hash', is returned by the blockchain when the contract is deployed. *The hash is used to identify and call a deployed contract on the blockchain*. 
+- `properties`: the two boolean values inside indicate whether the deployed contract calls the persistent storage of the blockchain, and whether it uses the dynamic invoke functions. Our contract so far uses neither. 
+- `functions` lists the list of public methods in the contract that can be called. 
+- `parameters`, `return-type`: the parameters and return types of the main method of the deoloyed contract. In the case of AlienFinder, the parameter is string, and return type is void. 
+
+
+### Invocation
+
+Invocation of a contract on the blockchain is done by sending an 'invocation transaction' to the network. An invocation transaction contains: 
+- The `hash` of the target contract
+- The parameters the contract requires. 
+
+To call our AlienFinder contract, we will need to pass in: 
+- The hash of AlienFinder: `0x39afb0f0a253706a4ef3ff3ae38d1c6abb4212b7`
+- Any string parameter which will be the name of the alien, for example: `xenomorph`
+
+The contract will then create a Runtime.Notify event with the message: "xenomorph created". 
+
+---
+
+For specific environment setup and usage, choose one of the following environments: 
+- [VSCode Neo Blockchain Toolkit - Quickstart](https://github.com/neo-project/neo-blockchain-toolkit/blob/master/quickstart.md)
+- [Getting Started using NEO CLI client](https://neo-ngd.github.io/NEO-Tutorial/en/9-smartContract/Development_privateChain.html)

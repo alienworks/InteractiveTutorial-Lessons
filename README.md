@@ -2,6 +2,38 @@
 
 ## C# Part
 
+*Chapters tagged with [B] focus more on the concepts of the C# language. Readers who have familiarity with C# or programming can skip these Chapters.*
+
+- Lesson 01: Introduction
+  - [Ch01 [B] - NEO Contracts](/C%23/en-us/Lesson01/L01Ch01.md)
+  - [Ch02 [B] - Variables and Unsigned Integers](/C%23/en-us/Lesson01/L01Ch02.md)
+  - [Ch03 [B] - Classes, the Basics](/C%23/en-us/Lesson01/L01Ch03.md)
+  - [Ch04 [B] - Arrays and Reference Types](/C%23/en-us/Lesson01/L01Ch05.md)
+  - [Addendum - Variable Limitations for NEO Contracts](/C%23/en-us/Lesson01/L01Ch05Addendum.md)
+  - [Ch05 [B] - Methods and Return Values](/C%23/en-us/Lesson01/L01Ch06.md)
+  - [Ch06 - Block Height and Random Number](/C%23/en-us/Lesson01/L01Ch07.md)
+  - [Ch07 - Wrapping Up](/C%23/en-us/Lesson01/L01Ch08.md)
+  - [Ch08 - Deployment and Invocation](/C%23/en-us/Lesson01/L01Ch09a.md)
+  - [Ch09 - Summary](/C%23/en-us/Lesson01/L01Ch09.md)
+
+- Lesson 02: Deeper Into NEO Contracts
+  - [Ch01 [B] - More On Classes](/C%23/en-us/Lesson02/L02Ch01.md)
+  - [Ch02 - Flow Control & Contract Structure](/C%23/en-us/Lesson02/L02Ch02.md)
+  - [Ch03 - Exceptions & Runtime Class](/C%23/en-us/Lesson02/L02Ch03.md)
+  - [Ch04 - Static variables & Storage of Key-Value Pairs](/C%23/en-us/Lesson02/L02Ch04.md)
+  - [Ch05 - Storage using StorageMap](/C%23/en-us/Lesson02/L02Ch06.md)
+  - [Ch06 - Exercise: Implementing Query and Delete](/C%23/en-us/Lesson02/L02Ch06.md)
+  - [Ch07 - Summary](/C%23/en-us/Lesson02/L02Ch07.md)
+
+- Lesson 03: Implementing Game Mechanics
+  - [Ch01 - Implementing Dices and Getting Alien Attributes](/C%23/en-us/Lesson03/L03Ch01.md)
+  - [Ch02 [B] - Delegates and Events](/C%23/en-us/Lesson03/L03Ch02.md)
+  - [Ch03 [B] - Events, Continued](/C%23/en-us/Lesson03/L03Ch03.md)
+  - [Ch04 - Roll Checks, Reward and Punishment](/C%23/en-us/Lesson03/L03Ch04.md)
+  - [Ch05 - Combat Outcome Determination](/C%23/en-us/Lesson03/L03Ch06.md)
+  - [Ch06 - Generating Encounters in Forward()](/C%23/en-us/Lesson03/L03Ch06.md)
+  - [Ch07 - Summary](/C%23/en-us/Lesson03/L03Ch07.md)
+
 ## TypeScript Part
 
 - Lesson 01: Introduction
