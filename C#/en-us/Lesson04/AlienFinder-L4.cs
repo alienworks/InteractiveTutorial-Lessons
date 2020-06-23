@@ -7,16 +7,37 @@ using Helper = Neo.SmartContract.Framework.Helper;
 
 public class AlienFinder_Ch4 : SmartContract
 {
-    public delegate void deleAlienEvent(BigInteger id); 
-    public static event deleAlienEvent AlienGenerated; 
-    public static event deleAlienEvent AlienDeleted; 
+    public delegate void AlienUpdateDelegate(BigInteger id); 
+    public static event AlienUpdateDelegate AlienGenerated; 
+    private static void OnAlienGenerated(BigInteger id) 
+    {
+        if (AlienGenerated != null) AlienGenerated(id); 
+    }
+    
+    public static event AlienUpdateDelegate AlienDeleted; 
+    private static void OnAlienDeleted(BigInteger id) 
+    {
+        if (AlienDeleted != null) AlienDeleted(id); 
+    }
 
     public static event Action<string, uint> Rewarded; 
+    private static void OnRewarded(String s, uint v) 
+    {
+        if (Rewarded != null) Rewarded(s, v); 
+    }
 
     public static event Action<string, uint> Punished; 
+    private static void OnPunished(String s, uint v) 
+    {
+        if (Punished != null) Punished(s, v); 
+    }
 
     public static event Action<string, byte[]> EncounterTriggered; 
-
+    private static void OnEncounterTriggered(String s, byte[] v) 
+    {
+        if (Punished != null) EncounterTriggered(s, v); 
+    }
+    
     public class Alien
     {        
         public uint Xna
@@ -24,6 +45,8 @@ public class AlienFinder_Ch4 : SmartContract
         public string AlienName
         { get; set; }
         public BigInteger Id 
+        { get; set; }
+        public byte[] Owner
         { get; set; }
     }
 
@@ -37,8 +60,6 @@ public class AlienFinder_Ch4 : SmartContract
                     return GenerateAlien((string)args[0], (byte[])args[1]); 
                 case "query":
                     return Query((byte[])args[0]); 
-                case "delete": 
-                    return Delete((byte[])args[0], (byte[])args[1]); 
                 case "forward": 
                     return Forward((byte[])args[0]); 
             }
@@ -48,6 +69,8 @@ public class AlienFinder_Ch4 : SmartContract
 
     public static bool GenerateAlien(string alienName, byte[] owner) 
     {
+        if (owner.Length != 20 && owner.Length != 33)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address or a 33-byte public key");        
         // Check if the owner is the same as one who invoked contract
         if (!Runtime.CheckWitness(owner)) return false; 
 
@@ -56,13 +79,17 @@ public class AlienFinder_Ch4 : SmartContract
         {
             Xna = xna,
             AlienName = alienName,
-            Id = updateCounter()
+            Id = updateCounter(), 
+            Owner = owner
         }; 
         
         // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
-        AlienGenerated(someAlien.Id); 
+        OnAlienGenerated(someAlien.Id); 
+
+        // save the id to the specified account 
+        Storage.Put(owner, someAlien.Id); 
         return true; 
     }
 
@@ -81,7 +108,8 @@ public class AlienFinder_Ch4 : SmartContract
     private static BigInteger getCounter() 
     {
         BigInteger counter = 0; 
-        byte[] value = Storage.Get("alienCount"); 
+        StorageMap counterMap = Storage.CurrentContext.CreateMap(nameof(counterMap)); 
+        byte[] value = counterMap.Get("alienCount"); 
         if (value.Length != 0) 
             counter = value.ToBigInteger();
         return counter; 
@@ -91,7 +119,8 @@ public class AlienFinder_Ch4 : SmartContract
     {
         BigInteger counter = getCounter(); 
         counter++; 
-        Storage.Put(Storage.CurrentContext, "alienCount", counter); 
+        StorageMap counterMap = Storage.CurrentContext.CreateMap(nameof(counterMap)); 
+        counterMap.Put("alienCount", counter); 
         return counter; 
     }
 
@@ -102,19 +131,6 @@ public class AlienFinder_Ch4 : SmartContract
         var result = alienMap.Get(id); 
         if (result.Length == 0) return null; 
         return Helper.Deserialize(result) as Alien; 
-    }
-
-    public static bool Delete(byte[] owner, byte[] id)
-    {
-        if (owner.Length != 20)
-            throw new InvalidOperationException("The parameter owner SHOULD be 20-byte addresses.");
-        // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return false; 
-
-        StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
-        alienMap.Delete(id); 
-        AlienDeleted(id.ToBigInteger()); 
-        return true; 
     }
 
     public static uint D6() 
@@ -163,15 +179,15 @@ public class AlienFinder_Ch4 : SmartContract
         {
             case 0:
                 a.Xna += value * 10000; 
-                Rewarded("strength", value); 
+                OnRewarded("strength", value); 
                 break; 
             case 1: 
                 a.Xna += value * 100; 
-                Rewarded("speed", value); 
+                OnRewarded("speed", value); 
                 break; 
             case 2: 
                 a.Xna += value; 
-                Rewarded("weight", value); 
+                OnRewarded("weight", value); 
                 break; 
             default: 
                 break; 
@@ -189,15 +205,15 @@ public class AlienFinder_Ch4 : SmartContract
         {
             case 0:
                 a.Xna -= value * 10000; 
-                Punished("strength", value); 
+                OnPunished("strength", value); 
                 break; 
             case 1: 
                 a.Xna -= value * 100; 
-                Punished("speed", value); 
+                OnPunished("speed", value); 
                 break; 
             case 2: 
                 a.Xna -= value; 
-                Punished("weight", value); 
+                OnPunished("weight", value); 
                 break; 
             default: 
                 break; 
@@ -206,30 +222,25 @@ public class AlienFinder_Ch4 : SmartContract
     }
 
     // Determines the success of an action using a D100 and modifier
-    private static Alien Check(Alien a, int modifier) {
-        if (modifier + D100() > 100)
+    private static Alien Check(Alien a, int modifier) 
+    {
+        if (modifier + D100() > 99)
             return Reward(a); 
         else 
             return Punish(a); 
     }
 
     // Modify the alien depending on result, then return it. 
-    private static Alien Fight(Alien alien, Alien enemy){
-        int strength = getStrength(alien); 
-        int speed = getSpeed(alien); 
-        int weight = getWeight(alien); 
-
-        int enemyStrength = getStrength(enemy);
-        int enemySpeed = getSpeed(enemy);
-        int enemyWeight = getWeight(enemy);
-
+    private static Alien Fight(Alien alien, Alien enemy)
+    {
         int score = 0; 
-        if (strength > enemyStrength) 
-            score++; 
-        if (speed > enemySpeed)
-            score++; 
-        if (weight > enemyWeight)
-            score++; 
+
+        if (getStrength(alien) > getStrength(enemy)) 
+            score = score + 1; 
+        if (getSpeed(alien) > getSpeed(enemy))
+            score = score + 1; 
+        if (getWeight(alien) > getWeight(enemy))
+            score = score + 1; 
 
         if (score > 1) {
             alien = Reward(alien); 
@@ -240,7 +251,8 @@ public class AlienFinder_Ch4 : SmartContract
         return alien; 
     }
 
-    public static bool Forward(byte[] id) {
+    public static bool Forward(byte[] id) 
+    {
         Alien alien = Query(id); 
         if (alien == null) 
         {
@@ -252,31 +264,31 @@ public class AlienFinder_Ch4 : SmartContract
         switch(encounter) 
         {
             case 0:  // Strength check, remove some obstacle in the way
-                EncounterTriggered("strength", id); 
+                OnEncounterTriggered("strength", id); 
                 alien = Check(alien, getStrength(alien)); 
                 break; 
             case 1:  // Speed check, run through dangerous area
-                EncounterTriggered("speed", id); 
+                OnEncounterTriggered("speed", id); 
                 alien = Check(alien, getSpeed(alien)); 
                 break; 
             case 2:  // Weight check, get across a weak bridge
-                EncounterTriggered("weight", id); 
-                int modifier = 100 - getWeight(alien); 
+                OnEncounterTriggered("weight", id); 
+                int modifier = 99 - getWeight(alien); 
                 alien = Check(alien, modifier); 
                 break; 
             case 3:  // Battle encounter
-                EncounterTriggered("battle", id); 
+                OnEncounterTriggered("battle", id); 
                 byte[] enemyId = DN(getCounter()).ToByteArray(); 
                 Alien enemy = Query(enemyId); 
-                if (enemy == null) return false; 
+                if (enemy == null) break; 
                 alien = Fight(alien, enemy); 
                 break; 
             case 4:  // Find treasure
-                EncounterTriggered("reward", id); 
+                OnEncounterTriggered("reward", id); 
                 alien = Reward(alien); 
                 break; 
             case 5: // Fall into trap
-                EncounterTriggered("punish", id); 
+                OnEncounterTriggered("punish", id); 
                 alien = Punish(alien); 
                 break; 
             default: 
@@ -289,15 +301,95 @@ public class AlienFinder_Ch4 : SmartContract
         return true; 
     }
 
+    /**
+    * Chapter 4
+    */
+
     /*
     * NEP 11 Implementation
     */ 
-    public static BigInteger TotalSupply() => getCounter(); 
-
-    public static BigInteger BalanceOf() 
+    
+    // Fired when a asset trandfer is complete
+    public static event Action<byte[], byte[], byte[]> Transfer; 
+    public static void OnTransfer(byte[] from, byte[] to, byte[] tokenId) 
     {
-
+        if (Transfer != null)
+            Transfer(from, to, tokenId); 
     }
 
+    public static string name() => "Alien"; 
+    
+    public static string symbol() => "ALI"; 
+
+    public static BigInteger TotalSupply() => getCounter(); 
+
+    public static byte decimals() => 0; 
+
+    public static byte[] OwnerOf(byte[] id)
+    {
+        Alien a = Query(id); 
+        if (a != null) return a.Owner; 
+        return null; 
+    }
+
+    public static BigInteger BalanceOf(byte[] addr) 
+    {
+        if (addr.Length != 20)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address");
+        
+        var count = 0; 
+        // iterate through the collection of data saved with addr as key
+        var iterator = Storage.Find(addr);
+        while (iterator.Next())
+            count = count + 1; 
+        return count; 
+    }
+
+    public static Alien[] tokensOf(byte[] owner)
+    {
+        if (owner.Length != 20)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address");
+
+        int balance = (int)BalanceOf(owner); 
+        Alien[] tokens = new Alien[balance]; 
+
+        var iterator = Storage.Find(owner); 
+        for (int i = 0; i < balance; i++) 
+        {
+            iterator.Next(); 
+            tokens[i] = Query(iterator.Value); 
+        }
+
+        return tokens; 
+    }
+
+
+    public static bool transfer(byte[] to, byte[] tokenid)
+    {
+        if (to.Length != 20)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address");
+    
+        Alien token = Query(tokenid); 
+        if (token == null)
+            throw new InvalidOperationException("Invalid Alien token id"); 
+        
+        // Check if the owner of the alien is the same as the caller of the contract
+        if (!Runtime.CheckWitness(token.Owner)) return false; 
+        
+        // Transfer
+        token.Owner = to; 
+        Storage.Put(to, tokenid); 
+        // Update the tokens for the original owner in storage
+        var iterator = Storage.Find(token.Owner); 
+        while(iterator.Next())
+        {
+            if (iterator.Value == tokenid)
+                Storage.Delete(iterator.Key); 
+        }
+        
+        OnTransfer(token.Owner, to, tokenid); 
+        return true; 
+
+    }
 
 }

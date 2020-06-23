@@ -65,10 +65,11 @@ public class AlienFinder_Ch3 : SmartContract
         return false; 
     }
 
-    public static bool GenerateAlien(string alienName, byte[] owner) 
+    public static BigInteger GenerateAlien(string alienName, byte[] owner) 
     {
-        // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness(owner)) return false; 
+        if (owner.Length != 20 && owner.Length != 33)
+            throw new InvalidOperationException("The parameter owner should be a 20-byte address or a 33-byte public key");        // Check if the owner is the same as one who invoked contract
+        if (!Runtime.CheckWitness(owner)) return 0; 
 
         uint xna = FindXna(RandomNumber());
         Alien someAlien = new Alien
@@ -81,8 +82,8 @@ public class AlienFinder_Ch3 : SmartContract
         // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
-        OnAlienGenerated(someAlien.Id); 
-        return true; 
+        Runtime.Notify(someAlien.Id, "created");
+        return someAlien.Id; 
     }
 
     private static ulong RandomNumber()
