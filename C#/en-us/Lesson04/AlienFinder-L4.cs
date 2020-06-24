@@ -67,7 +67,7 @@ public class AlienFinder_Ch4 : SmartContract
         return false; 
     }
 
-    public static bool GenerateAlien(string alienName, byte[] owner) 
+    public static BigInteger GenerateAlien(string alienName, byte[] owner) 
     {
         if (owner.Length != 20 && owner.Length != 33)
             throw new InvalidOperationException("The parameter owner should be a 20-byte address or a 33-byte public key");        
@@ -90,7 +90,7 @@ public class AlienFinder_Ch4 : SmartContract
 
         // save the id to the specified account 
         Storage.Put(owner, someAlien.Id); 
-        return true; 
+        return someAlien.Id; 
     }
 
     private static ulong RandomNumber()
