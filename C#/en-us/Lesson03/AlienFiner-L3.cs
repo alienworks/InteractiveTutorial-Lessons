@@ -8,6 +8,7 @@ using Helper = Neo.SmartContract.Framework.Helper;
 public class AlienFinder_Ch3 : SmartContract
 {
     public delegate void AlienUpdateDelegate(BigInteger id); 
+    
     public static event AlienUpdateDelegate AlienGenerated; 
     private static void OnAlienGenerated(BigInteger id) 
     {
@@ -82,7 +83,7 @@ public class AlienFinder_Ch3 : SmartContract
         // add the object to storage
         StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap)); 
         alienMap.Put(someAlien.Id.ToByteArray(), Helper.Serialize(someAlien)); 
-        Runtime.Notify(someAlien.Id, "created");
+        AlienGenerated(someAlien.Id); 
         return someAlien.Id; 
     }
 
