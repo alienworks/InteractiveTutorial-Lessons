@@ -56,7 +56,7 @@ export class AlienFinder extends SmartContract {
 
     private readonly aliens = MapStorage.for<number, Alien>();
 
-    private counter: number = 0; 
+    private counter: number = 0;
 
     public constructor(public readonly owner: Address = Deploy.senderAddress) {
         super();
@@ -70,7 +70,7 @@ export class AlienFinder extends SmartContract {
         let blockHeight: number = Blockchain.currentHeight;
         let xna: number = this.findXna(this.randomNumber(blockHeight));
         let id: number = ++this.counter;
-        let someAlien: Alien = {xna: xna, alienName: alienName, blockHeight: blockHeight, id: id, owner: this.owner};
+        let someAlien: Alien = { xna: xna, alienName: alienName, blockHeight: blockHeight, id: id, owner: this.owner };
         this.aliens.set(id, someAlien);
         notifyCreation(someAlien.id);
     }
@@ -101,7 +101,7 @@ export class AlienFinder extends SmartContract {
         let blockHeight: number = Blockchain.currentHeight;
         let randomDigit: number = this.randomNumber(blockHeight) % 100;
 
-        switch(attribute) {
+        switch (attribute) {
             case 0: {
                 let right: number = a.xna % 1E6;
                 a.xna = randomDigit * 1E6 + right;
@@ -162,7 +162,7 @@ export class AlienFinder extends SmartContract {
         let attribute: number = this.d6() / 2;
         let value: number = this.d10();
 
-        switch(attribute) {
+        switch (attribute) {
             case 0: {
                 alien.xna += value * 1E4;
                 notifyReward('strength', value);
@@ -191,7 +191,7 @@ export class AlienFinder extends SmartContract {
         let attribute: number = this.d6() / 2;
         let value: number = this.d10();
 
-        switch(attribute) {
+        switch (attribute) {
             case 0: {
                 alien.xna -= this.d10() * 1E4;
                 notifyPunishment('strength', value);
@@ -244,7 +244,7 @@ export class AlienFinder extends SmartContract {
         if (weight > enemyWeight) {
             score++;
         }
-        
+
         if (score > 1) {
             this.reward(alien);
         }
@@ -257,7 +257,7 @@ export class AlienFinder extends SmartContract {
         let alien: Alien = this.query(id);
         let event: number = this.d6();
 
-        switch(event) {
+        switch (event) {
             case 0: {
                 // strength event(digits 3-4), remove some obstacle in the way
                 let strength: number = alien.xna % 1E6 / 1E4;
@@ -321,13 +321,13 @@ export class AlienFinder extends SmartContract {
     }
 
     @constant
-    public ownerOf(tokenId: Fixed<8>): Address{
+    public ownerOf(tokenId: Fixed<8>): Address {
         const alien = this.query(tokenId);
         return alien.owner;
     }
 
     @constant
-    public tokensOf(account: Address): Alien[]{
+    public tokensOf(account: Address): Alien[] {
         let tokens: Alien[] = [];
         this.aliens.forEach(alien => {
             if (account == alien.owner) {

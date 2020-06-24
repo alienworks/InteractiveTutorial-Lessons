@@ -25,7 +25,7 @@ export class AlienFinder extends SmartContract {
 
     private readonly aliens = MapStorage.for<number, Alien>();
 
-    private counter: number = 0; 
+    private counter: number = 0;
 
     public constructor(public readonly owner: Address = Deploy.senderAddress) {
         super();
@@ -39,7 +39,7 @@ export class AlienFinder extends SmartContract {
         let blockHeight: number = Blockchain.currentHeight;
         let xna: number = this.findXna(this.randomNumber(blockHeight));
         let id: number = ++this.counter;
-        let someAlien: Alien = {xna: xna, alienName: alienName, blockHeight: blockHeight, id: id};
+        let someAlien: Alien = { xna: xna, alienName: alienName, blockHeight: blockHeight, id: id };
         this.aliens.set(id, someAlien);
         notifyCreation(someAlien.id);
     }
@@ -70,7 +70,7 @@ export class AlienFinder extends SmartContract {
         let blockHeight: number = Blockchain.currentHeight;
         let randomDigit: number = this.randomNumber(blockHeight) % 100;
 
-        switch(attribute) {
+        switch (attribute) {
             case 0: {
                 let right: number = a.xna % 1E6;
                 a.xna = randomDigit * 1E6 + right;
