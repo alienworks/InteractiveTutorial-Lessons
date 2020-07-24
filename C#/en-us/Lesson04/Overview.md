@@ -1,5 +1,5 @@
 ---
-"title": "Lesson 4: csharp overview title"
+"title": "Lesson 4: Tokenizing Aliens With NEP-11"
 header: header content
 roadmap: roadmap.png
 ---
