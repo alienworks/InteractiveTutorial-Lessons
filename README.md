@@ -39,7 +39,7 @@
 
 ## TypeScript Part
 
-- Lesson 01: Introduction
+- Lesson 01: Creating the Alien Finder
   - [Ch01 - Introduction](/Typescript/en-us/Lesson01/L01Ch01.md)
   - [Ch02 - NEO Contracts](/Typescript/en-us/Lesson01/L01Ch02.md)
   - [Ch03 - Variables and Arrays](/Typescript/en-us/Lesson01/L01Ch03.md)
@@ -58,8 +58,8 @@
   - [Ch05 - Loops and Switches](/Typescript/en-us/Lesson02/L02Ch05.md)
   - [Ch06 - Further Tests](/Typescript/en-us/Lesson02/L02Ch06.md)
   - [Ch07 - Summary](/Typescript/en-us/Lesson02/L02Ch07.md)
-- Lesson 03: Implementing Game Mechanics
-  - [Ch01 - Implementing Game Mechanics](/Typescript/en-us/Lesson03/L03Ch01.md)
+- Lesson 03: Dice-Based Adventure System
+  - [Ch01 - Dice-Based Adventure System](/Typescript/en-us/Lesson03/L03Ch01.md)
   - [Ch02 - Dices](/Typescript/en-us/Lesson03/L03Ch02.md)
   - [Ch03 - Reward and Punishment](/Typescript/en-us/Lesson03/L03Ch03.md)
   - [Ch04 - Events and judgement](/Typescript/en-us/Lesson03/L03Ch04.md)
