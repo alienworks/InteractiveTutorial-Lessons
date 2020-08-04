@@ -5,8 +5,9 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 using Helper = Neo.SmartContract.Framework.Helper;
 
-public class AlienFinder_Ch4 : SmartContract {
+public class AlienFinder : SmartContract {
     public delegate void AlienUpdateDelegate (BigInteger id);
+    
     public static event AlienUpdateDelegate AlienGenerated;
     private static void OnAlienGenerated (BigInteger id) {
         if (AlienGenerated != null) AlienGenerated (id);
@@ -57,7 +58,7 @@ public class AlienFinder_Ch4 : SmartContract {
         if (owner.Length != 20 && owner.Length != 33)
             throw new InvalidOperationException ("The parameter owner should be a 20-byte address or a 33-byte public key");
         // Check if the owner is the same as one who invoked contract
-        if (!Runtime.CheckWitness (owner)) return false;
+        if (!Runtime.CheckWitness (owner)) return 0;
 
         uint xna = FindXna (RandomNumber ());
         Alien someAlien = new Alien {
@@ -72,8 +73,10 @@ public class AlienFinder_Ch4 : SmartContract {
         alienMap.Put (someAlien.Id.ToByteArray (), Helper.Serialize (someAlien));
         OnAlienGenerated (someAlien.Id);
 
-        // save the id to the specified account 
-        Storage.Put (owner, someAlien.Id);
+        // Update owner balance
+        BigInteger balance = balanceOf(owner);
+        Storage.Put(owner, balance + 1);
+
         return someAlien.Id;
     }
 
@@ -89,8 +92,7 @@ public class AlienFinder_Ch4 : SmartContract {
     // Read the counter from storage if it exists. Otherwise, default to 0. 
     private static BigInteger getCounter () {
         BigInteger counter = 0;
-        StorageMap counterMap = Storage.CurrentContext.CreateMap (nameof (counterMap));
-        byte[] value = counterMap.Get ("alienCount");
+        byte[] value = Storage.Get ("alienCount");
         if (value.Length != 0)
             counter = value.ToBigInteger ();
         return counter;
@@ -98,9 +100,8 @@ public class AlienFinder_Ch4 : SmartContract {
 
     private static BigInteger updateCounter () {
         BigInteger counter = getCounter ();
-        counter++;
-        StorageMap counterMap = Storage.CurrentContext.CreateMap (nameof (counterMap));
-        counterMap.Put ("alienCount", counter);
+        counter = counter + 1;
+        Storage.Put (Storage.CurrentContext, "alienCount", counter);
         return counter;
     }
 
@@ -264,12 +265,9 @@ public class AlienFinder_Ch4 : SmartContract {
         return true;
     }
 
-    /**
-     * Chapter 4
-     */
 
     /*
-     * NEP 11 Implementation
+     * Lesson 4: NEP 11 Implementation
      */
 
     // Fired when a asset trandfer is complete
@@ -283,39 +281,42 @@ public class AlienFinder_Ch4 : SmartContract {
 
     public static string symbol () => "ALI";
 
-    public static BigInteger TotalSupply () => getCounter ();
+    public static BigInteger totalSupply () => getCounter ();
 
     public static byte decimals () => 0;
 
-    public static byte[] OwnerOf (byte[] id) {
+    public static byte[] ownerOf (byte[] id) {
         Alien a = Query (id);
         if (a != null) return a.Owner;
         return null;
     }
 
-    public static BigInteger BalanceOf (byte[] addr) {
+    public static BigInteger balanceOf (byte[] addr) {
         if (addr.Length != 20)
             throw new InvalidOperationException ("The parameter owner should be a 20-byte address");
 
-        var count = 0;
-        // iterate through the collection of data saved with addr as key
-        var iterator = Storage.Find (addr);
-        while (iterator.Next ())
-            count = count + 1;
-        return count;
+        BigInteger balance = 0; 
+        byte[] value = Storage.Get(addr); 
+        if (value != null)
+            balance = value.ToBigInteger(); 
+        return balance;
     }
 
     public static Alien[] tokensOf (byte[] owner) {
         if (owner.Length != 20)
             throw new InvalidOperationException ("The parameter owner should be a 20-byte address");
 
-        int balance = (int) BalanceOf (owner);
-        Alien[] tokens = new Alien[balance];
+        int balance = (int) balanceOf (owner);
+        Alien[] tokens = new Alien[balance + 1];
+        int idx = 0;
 
-        var iterator = Storage.Find (owner);
-        for (int i = 0; i < balance; i++) {
-            iterator.Next ();
-            tokens[i] = Query (iterator.Value);
+        // Iterate through all tokens, find tokens that beloneg to owner
+        for (BigInteger id = 1; id <= totalSupply (); id = id + 1) {
+            Alien token = Query (id.ToByteArray ());
+            if (token != null && token.Owner == owner) {
+                tokens[idx] = token;
+                idx = idx + 1;
+            }
         }
 
         return tokens;
@@ -333,15 +334,16 @@ public class AlienFinder_Ch4 : SmartContract {
         if (!Runtime.CheckWitness (token.Owner)) return false;
 
         // Transfer
+        byte[] from = token.Owner;
+        Storage.Put(from, balanceOf(from) - 1);
+        Storage.Put(to, balanceOf(to) + 1);
         token.Owner = to;
-        Storage.Put (to, tokenid);
-        // Update the tokens for the original owner in storage
-        var iterator = Storage.Find (token.Owner);
-        while (iterator.Next ()) {
-            if (iterator.Value == tokenid)
-                Storage.Delete (iterator.Key);
-        }
 
+        // Save the modified token
+        StorageMap alienMap = Storage.CurrentContext.CreateMap(nameof(alienMap));
+        alienMap.Put(tokenid, Helper.Serialize(token));
+
+        // Raise event
         OnTransfer (token.Owner, to, tokenid);
         return true;
 

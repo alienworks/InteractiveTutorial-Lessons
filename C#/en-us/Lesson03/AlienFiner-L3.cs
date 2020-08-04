@@ -5,7 +5,7 @@ using Neo.SmartContract.Framework.Services.Neo;
 
 using Helper = Neo.SmartContract.Framework.Helper;
 
-public class AlienFinder_Ch3 : SmartContract {
+public class AlienFinder : SmartContract {
     public delegate void AlienUpdateDelegate (BigInteger id);
 
     public static event AlienUpdateDelegate AlienGenerated;
@@ -55,7 +55,8 @@ public class AlienFinder_Ch3 : SmartContract {
 
     public static BigInteger GenerateAlien (string alienName, byte[] owner) {
         if (owner.Length != 20 && owner.Length != 33)
-            throw new InvalidOperationException ("The parameter owner should be a 20-byte address or a 33-byte public key"); // Check if the owner is the same as one who invoked contract
+            throw new InvalidOperationException ("The parameter owner should be a 20-byte address or a 33-byte public key"); 
+        // Check if the owner is the same as one who invoked contract
         if (!Runtime.CheckWitness (owner)) return 0;
 
         uint xna = FindXna (RandomNumber ());
@@ -92,7 +93,7 @@ public class AlienFinder_Ch3 : SmartContract {
 
     private static BigInteger updateCounter () {
         BigInteger counter = getCounter ();
-        counter++;
+        counter = counter + 1;
         Storage.Put (Storage.CurrentContext, "alienCount", counter);
         return counter;
     }
