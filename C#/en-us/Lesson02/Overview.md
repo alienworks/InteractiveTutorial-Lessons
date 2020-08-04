@@ -1,5 +1,5 @@
 ---
-"title": "Lesson 2: Storing & Accessing Your Aliens"
+"title": "Lesson 2: Deeper Into NEO Contracts"
 header: header content
 roadmap: roadmap.png
 ---

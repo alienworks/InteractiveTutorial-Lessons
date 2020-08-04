@@ -4,8 +4,8 @@
 
 *Chapters tagged with [B] focus more on the concepts of the C# language. Readers who have familiarity with C# or programming can skip these Chapters.*
 
-- Lesson 01: Introduction
-  - [Ch01 - Introduction](/C%23/en-us/Lesson01/L01Ch01.md)
+- Lesson 01: Creating the Alien Finder
+  - [Ch01 - Creating the Alien Finder](/C%23/en-us/Lesson01/L01Ch01.md)
   - [Ch02 [B] - NEO Contracts](/C%23/en-us/Lesson01/L01Ch02.md)
   - [Ch03 [B] - Variables and Unsigned Integers](/C%23/en-us/Lesson01/L01Ch03.md)
   - [Ch04 [B] - Classes, the Basics](/C%23/en-us/Lesson01/L01Ch04.md)
@@ -27,8 +27,8 @@
   - [Ch07 - Exercise: Implementing Query](/C%23/en-us/Lesson02/L02Ch07.md)
   - [Ch08 - Summary](/C%23/en-us/Lesson02/L02Ch08.md)
 
-- Lesson 03: Implementing Game Mechanics
-  - [Ch01 - Implementing Game Mechanics](/C%23/en-us/Lesson03/L03Ch01.md)
+- Lesson 03: Dice-Based Adventure System
+  - [Ch01 - Dice-Based Adventure System](/C%23/en-us/Lesson03/L03Ch01.md)
   - [Ch02 - Implementing Dices and Getting Alien Attributes](/C%23/en-us/Lesson03/L03Ch02.md)
   - [Ch03 [B] - Delegates and Events](/C%23/en-us/Lesson03/L03Ch03.md)
   - [Ch04 [B] - Events, Continued](/C%23/en-us/Lesson03/L03Ch04.md)
